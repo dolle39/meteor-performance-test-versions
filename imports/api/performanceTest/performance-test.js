@@ -61,3 +61,21 @@ runPerformanceTest = function() {
   let tEnd = new Date();
   console.log(`Performance test with ${testIds.length} entries took ${(tEnd-tStart)/1000} [s].`);
 };
+
+
+runPerformanceTestWithSingleFinds = function() {
+  console.log("Running performance test with single findOnes.");
+  let tStart = new Date();
+
+  const testIds = TestCollection.find({}, {fields: {_id: 1}}).fetch().map(x => x._id);
+  console.log(`Found ${testIds.length} documents to test.`);
+
+  // Slice the data into chunks so that we don't prefetch all data because that could overflow the heap
+  testIds.forEach(id => {
+    const testDoc = TestCollection.findOne(id);
+  });
+
+  let tEnd = new Date();
+  console.log(`Performance test with single findOne() with ${testIds.length} entries took ${(tEnd-tStart)/1000} [s].`);
+  console.log(`Which means an average of ${(tEnd-tStart)/testIds.length} [ms] per entry.`);
+};
